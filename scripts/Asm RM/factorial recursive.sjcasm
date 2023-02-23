@@ -1,0 +1,30 @@
+.data
+	n: .float32 12
+	one: .float32 1
+	
+	
+	
+.code
+	l32		a0, 0(n)
+	call		fac
+	mov		a0, r0
+	sysc		SYSC_PRINT_NUMBER
+	hlt
+
+#int fac(int n);
+#a0 = n
+#t0 = 1	
+fac:
+	l32		t0, 0(one)		#t0 = 1
+	jle		a0, t0, fac1		#n <= 1 == true, jump
+	
+	push		a0				#push n to stack
+	sub		a0, a0, t0		#n = n - 1
+	call		fac				#calc  (n-1)!
+	pop		t0				#pop n from stack to t0
+	mul		r0, r0, t0		#(n-1)! * n
+	ret
+	
+fac1:
+	mov		r0, t0			#return 1
+	ret

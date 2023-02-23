@@ -1,0 +1,46 @@
+BLOCK CODE
+
+#int pow(int base, int exponent);
+#a0 = base
+#a1 = exponent
+#t0 = 1
+PROC pow
+	ldc		t0, one		#t0 = 1
+	jz		a1, exp0	#if it is zero jump to exp0
+	
+	sub		a1, t0	#calc exponent-1
+	call	pow		#call pow again
+	mul		r0, a0	#multiplicate
+	ret				#leave procedure
+	
+exp0:
+	mov		r0, t0	#return 1
+	ret				#leave procedure
+END
+
+PROC main
+	#print base^exponent = 
+	ldc		a0, base
+	sysc	SYSCALL_PRINTI
+	ldc		a0, caret
+	sysc	SYSCALL_PRINTS
+	ldc		a0, exponent
+	sysc	SYSCALL_PRINTI
+	ldc		a0, equals
+	sysc	SYSCALL_PRINTS
+	
+	#set args, call and print result
+	ldc		a0, base
+	ldc		a1, exponent
+	call	pow	#call pow
+	mov		a0, r0
+	sysc	SYSCALL_PRINTI
+END
+
+BLOCK DATA
+	base: 2
+	exponent: 30
+	caret: "^"
+	equals: " = "
+	
+	one: 1

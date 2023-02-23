@@ -1,0 +1,170 @@
+BLOCK CODE
+#Create an array, print it, sort it, print it again.
+
+#void selectionSort(int *pArray, int n);
+#a0 = pArray
+#a1 = n
+#t0 = min
+#t1 = tmp
+#t2 = i
+#t3 = j
+#t4 = 1
+#t5 = calculation value
+#t6 = calculation value
+PROC selectionSort
+	#declare variables
+	ldc		t0, zero	#int min = 0;
+	ldc		t1, zero	#int tmp = 0;
+	ldc		t4, one		#t4 = 1
+	
+	#first loop
+	ldc		t2, zero	#int i = 0;
+
+outerLoop:
+	#jump if i < n == false, i >= n == true, n <= i == true
+	jle		a1, t2, endOuterLoop
+	
+	mov		t0, t2	#min = i;
+	
+	#second loop
+	#int j = i+1;
+	mov		t3, t2	#j = i
+	add		t3, t4	#j++
+
+innerLoop:
+	#jump if j < n == false, j >= n == true, n <= j == true
+	jle		a1, t3, endInnerLoop
+	
+	#if statements
+	sel		t5, a0, t3	#t5 = pArray[j]
+	sel		t6, a0, t0	#t6 = pArray[min]
+	#jump if pArray[j] < pArray[min] == false, pArray[j] >= pArray[min] == true, pArray[min] <= pArray[j] == true
+	jle		t6, t5, continueInnerLoop
+	
+	mov		t0, t3	#min = j
+	
+continueInnerLoop:
+	add		t3, t4	#j++
+	jmp		innerLoop	#repeat inner loop
+endInnerLoop:
+	sel		t1, a0, t0	#tmp = pArray[min]
+	sel		t5, a0, t2	#t5 = pArray[i]
+	mova	a0, t0, t5	#pArray[min] = t6 (pArray[i])
+	mova	a0, t2, t1	#pArray[i] = tmp
+	
+	add		t2, t4		#i++
+	jmp		outerLoop
+	
+endOuterLoop:
+	ret
+END
+
+#void printArr(int *pArray, int n);
+#pArray = a0
+#n = a1
+#i = t0
+#pArray = t1
+#1 = t2
+#t3 = calculation value
+PROC printArr
+	ldc		t0, zero	#int i = 0;
+	mov		t1, a0		#save the array pointer in t1
+	ldc		t2, one
+	
+loop:
+	#jump if i < n == false, i >= n == true, n <= i == true
+	jle		a1, t0, endLoop
+	
+	sel		a0, t1, t0		#a0 = pArray[i]
+	sysc	SYSCALL_PRINTI		#Print pArray[i]
+	
+	#print the comma only when there are more values to follow
+	mov		t3, a1	#t3 = n
+	sub		t3, t2	#n-1
+	je		t3, t0, skipComma #if n-1 == i
+	
+	ldc		a0, comma	#t3 = ", "
+	sysc	SYSCALL_PRINTS		#Print ", "
+	
+skipComma:
+
+	add		t0, t2	#i++
+	jmp		loop	#repeat loop
+
+endLoop:
+	ret
+END
+
+#void randomAssign(int *pArray, int n);
+#pArray = a0
+#n = a1
+#i = t0
+#1 = t1
+PROC randomAssign
+	ldc		t0, zero	#int i = 0;
+	ldc		t1, one
+	
+loop:
+	#jump if i < n == false, i >= n == true, n <= i == true
+	jle		a1, t0, endLoop
+	
+	#generate random number and assign it to array index
+	sysc	SYSCALL_RAND
+	mova	a0, t0, r0		#pArray[i] = r0; (r0 is random number)
+
+	add		t0, t1	#i++
+	jmp		loop	#repeat loop
+	
+endLoop:
+	ret
+END
+
+#arraySize = s0
+#array = s1
+PROC main
+	ldc		s0, arraySize		#s0 = size of the array
+	anew	s1, s0				#s1 = create an array, size is taken from s0
+	
+	#assign random numbers, push args and call
+	mov		a0, s1
+	mov		a1, s0
+	call	randomAssign
+	
+	#print the unsorted array, push args and call
+	ldc		a0, unsorted
+	sysc	SYSCALL_PRINTS
+	mov		a0, s1
+	mov		a1, s0
+	call	printArr
+	
+	#print two linefeeds
+	ldc		a0, linefeed		#load "\n"
+	sysc	SYSCALL_PRINTS	#print "\n"
+	sysc	SYSCALL_PRINTS	#print "\n"
+	
+	#sort the array, push args and call
+	mov		a0, s1
+	mov		a1, s0
+	call	selectionSort
+	
+	#print the sorted array, push args and call
+	ldc		a0, sorted
+	sysc	SYSCALL_PRINTS
+	mov		a0, s1
+	mov		a1, s0
+	call	printArr
+END
+
+BLOCK DATA
+	#arguments
+	arraySize: 100
+	
+	#ints	
+	zero: 0
+	one: 1
+	
+	#strings
+	comma: ", "
+	linefeed: "\n"
+	unsorted: "unsorted:\n"
+	sorted: "sorted:\n"

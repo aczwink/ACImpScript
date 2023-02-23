@@ -1,0 +1,62 @@
+BLOCK CODE
+#sequence: 1/n
+
+#float calcSeq(int n)
+#calculates 1/n
+#a0 = n
+#t0 = calculation value
+PROC calcSeq
+	ldc		t0, oneF	#t0 = 1.0
+	divf	t0, a0		#t0 = 1.0/n
+	mov		r0, t0
+	ret
+END
+
+#s0 = i
+#t1 = n
+#t2 = 1
+PROC main
+	ldc		s0, one		#i = 1
+	ldc		t1, n
+	ldc		t2, one
+loop:
+	jl		t1, s0, endloop #jump if i <= n == false, i > n == true, n < i == true
+	
+	ldc		a0, str1	#load "1/n, n from 1 to "
+	sysc	SYSCALL_PRINTS	#print above
+	mov		a0, s0			#print i
+	sysc	SYSCALL_PRINTI
+	ldc		a0, is		#push " = " to stack
+	sysc	SYSCALL_PRINTS	#print above
+	
+	#call calculation
+	mov		a0, s0
+	i2f		a0
+	call	calcSeq
+	mov		a0, r0
+	sysc	SYSCALL_PRINTF
+	
+	ldc		a0, linefeed	#push "\n" to stack
+	sysc	SYSCALL_PRINTS	#print above
+	
+	add		s0, t2	#i++
+	
+	jmp		loop	#repeat loop
+endloop:
+END
+
+BLOCK DATA
+	#arguments
+	n: 10000
+	
+	#floats
+	zeroF: 0.0
+	oneF: 1.0
+	
+	#ints
+	one: 1
+	
+	#strings	
+	str1: "1/n, n from 1 to "
+	is:	" = "
+	linefeed: "\n"

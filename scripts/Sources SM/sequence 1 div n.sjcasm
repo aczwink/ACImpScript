@@ -1,0 +1,79 @@
+BLOCK CODE
+#sequence: 1/n
+
+#float calcSeq(int n)
+#returns the sum of 1/n from 1 to param n
+#BSP = n
+#BSP+1 = sum
+#BSP+2 = i
+PROC calcSeq
+	ldc		zeroF	#float sum = 0.0;
+	ldc		one		#int i = 1;
+loop:
+	push	BSP+2	#push i to stack
+	push	BSP		#push n to stack
+	jl		endloop	#if(i <= n) == false, jump
+	
+	push	BSP+2	#push i to stack
+	i2f
+	ldc		oneF	#push 1.0 to stack
+	divf			#1/n
+	push	BSP+1	#push sum to stack
+	addf			#sum + 1/n
+	mov		BSP+1, SP	#sum = sum + 1/n
+	pop				#pop calcluation value
+	
+	inc		BSP+2	#i++
+	
+	jmp		loop	#repeat loop
+	
+endloop:
+	pop				#pop i
+	mov		BSP, SP	#copy result to bsp
+	pop				#pop sum
+	ret				#return
+END
+
+PROC main
+	ldc		one		#i = 1
+loop:
+	push	BSP		#push i to stack
+	ldc		n		#push n to stack
+	jl		endloop #if(i <= n) == false, jump
+	
+	ldc		str1	#push "1/n, n from 1 to " to stack
+	sysc	SYSCALL_PRINTS			#print above
+	push	BSP		#push i to stack
+	sysc	SYSCALL_PRINTI			#print i
+	ldc		is		#push " = " to stack
+	sysc	SYSCALL_PRINTS			#print " = "
+	
+	push	BSP		#push i to stack
+	call	calcSeq	#calc 1/n from 1 to i
+	sysc	SYSCALL_PRINTF			#print result
+	
+	ldc		linefeed	#push "\n" to stack
+	sysc	SYSCALL_PRINTS				#print "\n"
+	
+	inc		BSP		#i++
+	
+	jmp		loop	#repeat loop
+endloop:
+	pop				#pop i
+END
+
+BLOCK DATA
+	#arguments
+	n: 10000
+	
+	#floats
+	zeroF: 0.0
+	oneF: 1.0
+	
+	#ints
+	one: 1
+	
+	#strings	
+	str1: "1/n, n from 1 to "
+	is:	" = "
+	linefeed: "\n"

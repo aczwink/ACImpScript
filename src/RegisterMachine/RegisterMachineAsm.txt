@@ -1,0 +1,68 @@
+//----------------------------
+//----------------------------
+//------- Assignments --------
+//----------------------------
+//----------------------------
+
+ALPHABET EToken;
+
+
+//----------------------------
+//----------------------------
+//--------- C Enums ----------
+//----------------------------
+//----------------------------
+
+enum EToken
+{
+	TOKEN_ILLEGAL,
+	TOKEN_END,
+	TOKEN_WHITESPACE,
+	TOKEN_LINEFEED,
+	TOKEN_SINGLELINECOMMENT,
+	TOKEN_MULTILINECOMMENT,
+	TOKEN_NUMBER,
+	TOKEN_LITERAL,
+	TOKEN_COMMA,
+	TOKEN_PARENCLOSE,
+	TOKEN_PARENOPEN,
+	TOKEN_REGISTER,
+	TOKEN_LABEL,
+	TOKEN_IDENTIFIER,
+	TOKEN_KEYWORD_DATABLOCK,
+	TOKEN_KEYWORD_CODEBLOCK,
+	TOKEN_KEYWORD_FLOAT32,
+	TOKEN_KEYWORD_FLOAT64,
+};
+
+//----------------------------
+//----------------------------
+//-- Lexer Production Rules --
+//----------------------------
+//----------------------------
+
+'[ \t\r\f]+' -> TOKEN_WHITESPACE;
+
+'\n' -> TOKEN_LINEFEED;
+
+'#[^\r\n]*' -> TOKEN_SINGLELINECOMMENT;
+'/\*.*?\*/' -> TOKEN_MULTILINECOMMENT;
+
+'\-?[0-9]+(\.[0-9]+)?' -> TOKEN_NUMBER;
+'"[^"]*"' -> TOKEN_LITERAL;
+
+//Operators:
+',' -> TOKEN_COMMA;
+'\)' -> TOKEN_PARENCLOSE;
+'\(' -> TOKEN_PARENOPEN;
+
+//Keywords:
+'\.code' -> TOKEN_KEYWORD_CODEBLOCK;
+'\.data' -> TOKEN_KEYWORD_DATABLOCK;
+'\.float32' -> TOKEN_KEYWORD_FLOAT32;
+'\.float64' -> TOKEN_KEYWORD_FLOAT64;
+
+//Less Priority than keywords
+'[$rast][0-9]+' -> TOKEN_REGISTER;
+'[a-zA-Z_][a-zA-Z0-9_]*:' -> TOKEN_LABEL;
+'[a-zA-Z_][a-zA-Z0-9_]*' -> TOKEN_IDENTIFIER;

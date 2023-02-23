@@ -1,0 +1,23 @@
+|-----------------|
+|Reserved Keywords|
+|-----------------|
+
+BLOCK	Defines the start of a new block, must be combined with CODE or DATA, BLOCK must be the first keyword.
+CODE	Defines the start of the code block. Must be prior to data block.
+DATA	Defines the start of the data block. Is optional, if needed it must be past the code block.
+END	Defines the end of a procedure
+PROC	Defines the start of a new procedure, must be closed with END. After "PROC" the name of the procedure must follow.
+
+main	Name of the procedure defining the programs entry point.
+
+
+|-----------|
+|Syscall Ids|
+|-----------|
+
+Usage: See machine specification.
+
+SYSCALL_PRINTI: Used to print integers
+SYSCALL_PRINTF: Used to print floats
+SYSCALL_PRINTS: Used to print strings
+SYSCALL_RAND: Used to create random numbers

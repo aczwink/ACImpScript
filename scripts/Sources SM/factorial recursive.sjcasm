@@ -1,0 +1,31 @@
+BLOCK CODE
+
+#int fac(int n);
+PROC fac
+	ldc		one		#load 1 and push it to the stack
+	push	BSP		#push n again to the stack
+	jle		fac1	#n is <= 1, jump
+	
+	ldc		one		#load 1 and push it to the stack
+	push	BSP		#push n again to the stack
+	sub				#n-1
+	call	fac		#calc (n-1)!
+	mul				#n * (n-1)! and cleanup arg n
+	ret
+	
+fac1:
+	pop				#pop arg n
+	ldc		one		#return 1
+	ret
+END
+
+PROC main
+	ldc		n	#load n and push it to stack
+	call	fac	#call function
+	sysc	SYSCALL_PRINTI		#print result
+END
+
+BLOCK DATA
+	n: 12
+	
+	one: 1

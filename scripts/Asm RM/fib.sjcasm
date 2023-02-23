@@ -1,0 +1,94 @@
+.data
+	n: .float32 10	#fib(46) should be range of signed integer
+
+.code
+	l32		a0, 0(n)
+	call		fib
+	mov		a0, r0
+	sysc		SYSC_PRINT_NUMBER
+	hlt
+	
+
+#fib(0) = 0
+#fib(1) = 1
+#fib(n) = fib(n-1) + fib(n-2)
+#
+#a0 = n
+fib:
+
+
+
+/*
+BLOCK CODE
+
+#int fib(int n);
+#a0 = n
+#t0 = 1
+#t1 = result from fib(n-1)
+PROC fib
+	jz		a0, fib0or1		#if n == 0 jump
+	ldc		t0, one			#t0 = 1
+	je		a0, t0, fib0or1	#if n == 1 jump
+	
+	#if we reached here, n is >= 2
+	#calc fib(n-1)
+	sub		a0, t0	#n-1
+	push	a0		#push n-1 to stack
+	call	fib		#fib(n-1)
+	#calc fib(n-2)
+	pop		a0		#pop n-1 from stack
+	push	r0		#save our result on stack
+	sub		a0, t0	#n-2
+	call	fib		#fib(n-2)
+	#calc fib(n-1) + fib(n-2)
+	pop		t1		#pop the result from fib(n-1)
+	add		r0, t1
+	ret
+	
+fib0or1:			#if we jumped here and n is = 0 or = 1,
+	mov		r0, a0	#the result is = n as fib(0) = 0 and fib(1) = 1
+	ret
+END
+
+#s0 = i (int)
+#t1 = n
+#t2 = 1
+PROC main
+	ldc		s0, zero	#int i = 0
+	ldc		t2, one		#t2 = 1
+cond:
+	ldc		t1, n		#int n (const)
+	jl		t1, s0, end	#if n < i == true, jump
+
+	#print fib(i) =
+	ldc		a0, out1	#a0 = "fib("
+	sysc	SYSCALL_PRINTS
+	mov		a0, s0
+	sysc	SYSCALL_PRINTI
+	ldc		a0, out2	#a0 = ") = "
+	sysc	SYSCALL_PRINTS
+	
+	#calc fib(i) and print the result
+	mov		a0, s0
+	call	fib		#calc fib(i)
+	mov		a0, r0	#move return value to a0
+	sysc	SYSCALL_PRINTI
+	
+	#print newline
+	ldc		a0, out3	#a0 = "\n"
+	sysc	SYSCALL_PRINTS
+	
+	add		s0, t2	#i++
+	jmp		cond	#unconditional jump so loop is repeated
+end:
+END
+
+BLOCK DATA
+	zero: 0
+	one: 1
+
+	n: 46	#fib(46) should be range of signed integer
+	out1: "fib("
+	out2: ") = "
+	out3: "\n"
+*/

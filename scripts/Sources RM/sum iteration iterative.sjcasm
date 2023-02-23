@@ -1,0 +1,26 @@
+BLOCK CODE
+
+#sum(0) = 0
+#sum(n) = 1 + sum(n-1)
+#t0 = i
+#t1 = n
+#t2 = 1
+PROC main
+	ldc		t0, zero	#i = 0
+	ldc		t1, n		#t1 = n
+	ldc		t2, one		#t2 = 1
+loop:
+	jle		t1, t0, endloop	#i >= n, n <= i, end the loop
+	
+	add		t0, t2		#i++
+	jmp		loop	#repeat loop
+endloop:
+	mov		a0, t0
+	sysc	SYSCALL_PRINTI
+END
+
+BLOCK DATA
+	n: 10000000
+	
+	zero: 0
+	one: 1

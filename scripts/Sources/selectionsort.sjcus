@@ -1,0 +1,216 @@
+const int arraySize = 100;
+
+void main()
+{
+	array arr;
+	
+	arr = new array[arraySize];
+}
+
+/*
+#arraySize = BSP
+#array = BSP+1
+PROC main
+	ldc		arraySize		#int arraySize = ...; size of the array
+	push	BSP				#Push arraySize for array creation to stack
+	anew					#create an array of size "arraySize"
+	
+	#assign random numbers, push args and call
+	push	BSP
+	push	BSP+1
+	call	randomAssign
+	
+	#print the unsorted array, push args and call
+	ldc		unsorted
+	sysc	SYSCALL_PRINTS
+	push	BSP
+	push	BSP+1
+	call	printArr
+	
+	#print to linefeeds
+	ldc		linefeed		#push "\n" to stack
+	ldc		linefeed		#push "\n" to stack
+	sysc	SYSCALL_PRINTS	#print "\n"
+	sysc	SYSCALL_PRINTS	#print "\n"
+	
+	#sort the array, push args and call
+	push	BSP
+	push	BSP+1
+	call	selectionSort
+	
+	#print the sorted array, push args and call
+	ldc		sorted
+	sysc	SYSCALL_PRINTS
+	push	BSP
+	push	BSP+1
+	call	printArr
+	
+	pop		#pop the array
+	pop		#pop the array size
+END
+*/
+
+
+/*BLOCK CODE
+#Create an array, print it, sort it, print it again.
+
+#void selectionSort(int *pArray, int n);
+#n = BSP-1
+#pArray = BSP
+#min = BSP+1
+#tmp = BSP+2
+#i = BSP+3
+#j = BSP+4
+PROC selectionSort
+	#declare variables
+	ldc		zero	#int min = 0;
+	ldc		zero	#int tmp = 0;
+	
+	#first loop	
+	ldc		zero	#int i = 0;
+
+outerLoop:
+	#jump if i < n == false, i >= n == true, n <= i == true
+	push	BSP+3	#Push i to stack
+	push	BSP-1	#Push n to stack
+	jle		endOuterLoop
+	
+	mov		BSP+1, BSP+3	#min = i;
+	
+	#second loop
+	push	BSP+3		#Push i to stack
+	ldc		one			#Push 1 to stack
+	add					#int j = i+1;
+
+innerLoop:
+	#jump if j < n == false, j >= n == true, n <= j == true
+	push	BSP+4	#Push j to stack
+	push	BSP-1	#Push n to stack
+	jle		endInnerLoop
+	
+	#if statements
+	push	BSP+4	#push j to stack
+	sel		BSP		#push pArray[j] to stack
+	push	BSP+1	#push min to stack
+	sel		BSP		#push pArray[min] to stack
+	#jump if pArray[j] < pArray[min] == false, pArray[j] >= pArray[min] == true, pArray[min] <= pArray[j] == true
+	jle		continueInnerLoop
+	
+	mov		BSP+1, BSP+4	#min = j
+	
+continueInnerLoop:	
+	inc		BSP+4	#j++
+	jmp		innerLoop	#repeat inner loop
+endInnerLoop:
+	pop				#pop j
+	push	BSP+1	#push min to stack
+	sel		BSP		#push pArray[min] to stack
+	mov		BSP+2, SP	#tmp = pArray[min]
+	pop				#pop pArray[min]
+	
+	push	BSP+3	#push i to stack
+	sel		BSP		#push pArray[i] to stack
+	push	BSP+1	#push min to stack
+	mova	BSP, SP-1	#pArray[min] = pArray[i]
+	pop					#pop pArray[i]
+	
+	push	BSP+3	#push i to stack
+	mova	BSP, BSP+2	#pArray[i] = tmp
+	
+	inc		BSP+3		#i++
+	jmp		outerLoop
+	
+endOuterLoop:
+	pop	#pop i
+	pop	#pop tmp
+	pop #pop min
+	#pop arguments and return
+	pop
+	pop
+	ret
+END
+
+#void printArr(int *pArray, int n);
+#n = BSP-1
+#pArray = BSP
+#i = BSP+1
+PROC printArr
+	ldc		zero	#int i = 0;
+	
+loop:
+	#jump if i < n == false, i >= n == true, n <= i == true
+	push	BSP+1	#push i to stack
+	push	BSP-1	#push n to stack
+	jle		endLoop
+	
+	push	BSP+1	#push i to stack
+	sel		BSP		#Pushes pArray[i] to the stack
+	sysc	SYSCALL_PRINTI		#Print pArray[i]
+	
+	#print the comma only when there are more values to follow
+	ldc		one		#Push 1 to stack
+	push	BSP-1	#Push n to stack
+	sub				#n-1
+	push	BSP+1	#Push i to stack
+	je		skipComma
+	
+	ldc		comma	#Push ", " to stack
+	sysc	SYSCALL_PRINTS		#Print ", "
+	
+skipComma:
+
+	inc		BSP+1	#i++
+	
+	jmp		loop	#repeat loop
+
+endLoop:
+	pop		#pop var "i"
+	#pop the arguments and return
+	pop
+	pop
+	ret
+END
+
+#void randomAssign(int *pArray, int n);
+#n = BSP-1
+#pArray = BSP
+#i = BSP+1
+PROC randomAssign
+	ldc		zero	#int i = 0;
+	
+loop:
+	#jump if i < n == false, i >= n == true, n <= i == true
+	push	BSP+1	#push i to stack
+	push	BSP-1	#push n to stack
+	jle		endLoop
+	
+	#generate random number and assign it to array index
+	sysc	SYSCALL_RAND	#push random number to stack
+	push	BSP+1			#push i to stack
+	mova	BSP, SP-1		#pArray[i] = random number
+	pop						#pop random number
+	
+	inc		BSP+1	#i++
+	jmp		loop	#repeat loop
+	
+endLoop:
+	pop				#pop var "i"
+	#pop the arguments and return
+	pop
+	pop
+	ret
+END
+
+BLOCK DATA
+	#arguments
+	arraySize: 100
+	
+	#ints	
+	zero: 0
+	one: 1
+	
+	#strings
+	comma: ", "
+	linefeed: "\n"
+	unsorted: "unsorted:\n"
+	sorted: "sorted:\n"*/

@@ -1,0 +1,155 @@
+|-----------|
+|Conventions|
+|-----------|
+
+-First 4 arguments are copied left to right in the A-Registers. If a procedure takes more, the remaining
+ arguments are pushed from right to left to the stack.
+-The procedure should clean up the stack (just like in __stdcall).
+-A- and T-Registers don't have to be preserved and may be altered by a procedure.
+-If a procedure wants to use S-Registers it must save its values and restore them before it returns.
+
+-"Operation" in Instruction set is always pseudocode.
+
+
+|---------|
+|Registers|
+|---------|
+
+a0-a1: Argument registers for calls.
+r0: A procedure should store it's return value in this register.
+s0-s1: Save registers.
+t0-t6: Temporary registers.
+
+
+|-----------|
+|Syscall Ids|
+|-----------|
+
+SYSCALL_PRINTI: Takes the value in a0 and sends it to output stream as integer.
+SYSCALL_PRINTF: Takes the value in a0 and sends it to output stream as float.
+SYSCALL_PRINTS: Takes the value in a0 and sends it to output stream as string.
+SYSCALL_RAND: Places a random integer in r0.
+
+
+|-----------------------|
+|General Instruction Set|
+|-----------------------|
+
+Instruction: call
+Param 1: Procedure name
+Description: Calls a procedure.
+
+Instruction: je
+Param 1: register
+Param 2: register
+Param 3: label
+Description: The jump to param 3 is taken if param 1 is equal to param 2.
+Operation: if(p1 == p2) jump p3
+
+Instruction: jl
+Param 1: register
+Param 2: register
+Param 3: label
+Description: The jump to param 3 is taken if param 1 is less than param 2.
+Operation: if(p1 < p2) jump p3
+
+Instruction: jle
+Param 1: register
+Param 2: register
+Param 3: label
+Description: The jump to param 3 is taken if param 1 is less or equal than param 2.
+Operation: if(p1 <= p2) jump p3
+
+Instruction: jmp
+Param 1: label
+Description: Unconditional jump, jumps to the label.
+Operation: jump p1
+
+Instruction: ldc
+Param 1: register
+Param 2: constant
+Description: Loads a constant from data block to a register.
+Operation: p1 = Consts[p2]
+
+Instruction: mov
+Param 1: register
+Param 2: register
+Description: Param 2 is assigned to param 1.
+Operation: p1 = p2
+
+Instruction: pop
+Param 1: register
+Description: Pops a value from the stack and assigns it to register p1.
+
+Instruction: push
+Param 1: register
+Description: Pushes the value of a register to the stack.
+
+Instruction: ret
+Description: Return from procedure
+
+Instruction: sysc
+Param 1: Syscall Id
+Description: Executes a system call.
+
+
+|-----------------------|
+|Integer Instruction Set|
+|-----------------------|
+
+Instruction: add
+Param 1: register
+Param 2: register
+Description: Param 1 is added up with param 2.
+Operation: p1 = p1 + p2
+
+Instruction: jz
+Param 1: register
+Param 2: label
+Description: The jump to param 2 is taken if param 1 is 0.
+Operation: if(p1 == 0) jump p2
+
+Instruction: mul
+Param 1: register
+Param 2: register
+Description: Param 1 is multiplicated with param 2.
+Operation: p1 = p1 * p2
+
+Instruction: sub
+Param 1: register
+Param 2: register
+Description: Param 1 is subtracted by param 2.
+Operation: p1 = p1 - p2
+
+|------------------------------|
+|Floating-Point Instruction Set|
+|------------------------------|
+
+Instruction: divf
+Param 1: register
+Param 2: register
+Description: Param 1 is divided by param 2.
+Operation: p1 = p1 / p2
+
+Instruction: i2f
+Param 1: register
+Description: Param 1 is casted from integer to float.
+Operation: p1 = (float)p1
+
+|---------------------|
+|Array Instruction Set|
+|---------------------|
+
+Instruction: mova
+Param 1: register
+Param 2: register
+Param 3: register
+Description: Moves (copies) p3 to p1 at index p2.
+Operation: p1[p2] = p3
+
+Instruction: sel
+Param 1: register
+Param 2: register
+Param 3: register
+Description: Selects the index p3 of array p2 and assigns it to p1.
+Operation: p1 = p2[p3]

@@ -1,0 +1,31 @@
+BLOCK CODE
+
+#int sum(int n);
+#sum(0) = 0
+#sum(n) = 1 + sum(n-1)
+#t0 = 1
+PROC sum
+	jz		a0, end
+	
+	ldc		t0, one		#load 1
+	sub		a0, t0		#n-1
+	call	sum		#sum(n-1)
+	add		r0, t0	#1 + sum(n-1)
+	ret	
+end:
+	ldc		r0, zero
+	ret
+END
+
+PROC main
+	ldc		a0, n	#load the number we want to calcluate
+	call	sum	#sum(n)
+	mov		a0, r0
+	sysc	SYSCALL_PRINTI
+END
+
+BLOCK DATA
+	n: 10000000
+	
+	zero: 0	
+	one: 1

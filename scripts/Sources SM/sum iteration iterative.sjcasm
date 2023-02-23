@@ -1,0 +1,22 @@
+BLOCK CODE
+
+#sum(0) = 0
+#sum(n) = 1 + sum(n-1)
+PROC main
+	ldc		zero	#i = 0
+loop:
+	push	BSP		#push i to stack
+	ldc		n		#load n and push it to the stack
+	jle		endloop	#i >= n, end the loop
+	
+	inc		BSP		#i++
+	jmp		loop	#repeat loop
+endloop:
+	sysc	SYSCALL_PRINTI
+END
+
+BLOCK DATA
+	n: 10000000
+	
+	zero: 0
+	one: 1
